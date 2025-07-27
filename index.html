@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Oq será que tem aqui em?</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      color: #ffffff;
+      padding: 100px 20px 20px 20px;
+      background-image: url('fundo.gif');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      margin: 0;
+    }
+
+    #player-fixo {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 10px 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      z-index: 1000;
+      flex-wrap: wrap;
+    }
+
+    #player-fixo button {
+      padding: 10px 15px;
+      font-size: 16px;
+      background-color: #ff90d4;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    #player-fixo button:hover {
+      background-color: #ff70bf;
+    }
+
+    #musica-atual {
+      font-style: italic;
+      font-size: 16px;
+      color: #fff;
+      min-width: 180px;
+    }
+
+    #barra-progresso {
+      width: 200px;
+      cursor: pointer;
+    }
+
+    #controle-volume {
+      width: 100px;
+      cursor: pointer;
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 24px;
+      text-shadow: 0 0 5px #000;
+    }
+
+    #contador {
+      font-size: 24px;
+      margin: 20px 0;
+      text-shadow: 0 0 5px #000;
+    }
+
+    #senha-container {
+      display: none;
+      margin-top: 20px;
+    }
+
+    #presente {
+      display: none;
+      margin-top: 30px;
+    }
+
+    input[type="password"] {
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 10px;
+      border-radius: 6px;
+      border: none;
+      outline: none;
+      width: 200px;
+      max-width: 90vw;
+    }
+
+    #mensagem-erro {
+      color: #ff5c5c;
+      margin-top: 8px;
+      font-weight: bold;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+      transition: transform 0.3s;
+      cursor: pointer;
+    }
+
+    img:hover {
+      transform: scale(1.03);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="player-fixo">
+    <button onclick="anteriorMusica()">⏮️ Anterior</button>
+    <button id="botao-musica" onclick="alternarMusica()">▶️ Tocar</button>
+    <button onclick="proximaMusica()">⏭️ Próxima</button>
+    <div id="musica-atual">🎶 Música atual: musica1.mp3</div>
+    <input type="range" id="barra-progresso" value="0" min="0" max="100" aria-label="Barra de progresso da música" />
+    <label for="controle-volume" style="color: #fff; margin-left: 10px;">🔊</label>
+    <input type="range" id="controle-volume" min="0" max="100" value="100" aria-label="Controle de volume" />
+  </div>
+
+  <audio id="musica">
+    <source id="fonte-musica" src="musica1.mp3" type="audio/mpeg" />
+    Seu navegador não suporta áudio HTML.
+  </audio>
+
+  <h1>🌺 Contagem para seja lá o que tiver aqui... Enquanto isso, pode ouvir uma músiquinha que eu sei que você gosta. 🌺</h1>
+  <div id="contador">Calculando...</div>
+
+  <div id="senha-container">
+    <p>A senha é o nome da música a qual você me mandou lá no começo falando pra eu escutar com atenção que dizia um pouco sobre você:</p>
+    <input type="password" id="senha" placeholder="Digite a senha" />
+    <br />
+    <button onclick="verificarSenha()">Liberar</button>
+    <p id="mensagem-erro"></p>
+  </div>
+
+  <div id="presente">
+    <h2>🎉 Liberado! 🎉</h2>
+    <a href="https://m-edusa.github.io/Presente/" target="_blank">
+      <img src="presente.jpg" alt="Presente Surpresa" />
+    </a>
+  </div>
+
+  <script>
+    const musicas = [
+      "Lana Del Rey - Cinnamon Girl.mp3",
+      "Lana Del Rey - Pretty when you cry.mp3",
+      "The Neighbourhood - A Little Death.mp3",
+      "Reed Wonder, Aurora Olivas - The Machine.mp3",
+      "Lana Del Rey - Cherry.mp3"
+    ];
+
+    let indiceAtual = 0;
+
+    const audio = document.getElementById("musica");
+    const fonte = document.getElementById("fonte-musica");
+    const botao = document.getElementById("botao-musica");
+    const displayMusica = document.getElementById("musica-atual");
+    const barraProgresso = document.getElementById("barra-progresso");
+    const controleVolume = document.getElementById("controle-volume");
+
+    function atualizarFonteMusica() {
+      fonte.src = musicas[indiceAtual];
+      displayMusica.textContent = `🎶 Música atual: ${musicas[indiceAtual]}`;
+      audio.load();
+    }
+
+    function alternarMusica() {
+      if (audio.paused) {
+        audio.play();
+        botao.textContent = "⏸️ Pausar";
+      } else {
+        audio.pause();
+        botao.textContent = "▶️ Tocar";
+      }
+    }
+
+    function proximaMusica() {
+      indiceAtual = (indiceAtual + 1) % musicas.length;
+      atualizarFonteMusica();
+      audio.play();
+      botao.textContent = "⏸️ Pausar";
+    }
+
+    function anteriorMusica() {
+      indiceAtual = (indiceAtual - 1 + musicas.length) % musicas.length;
+      atualizarFonteMusica();
+      audio.play();
+      botao.textContent = "⏸️ Pausar";
+    }
+
+    audio.addEventListener("ended", () => {
+      proximaMusica();
+    });
+
+    audio.addEventListener("timeupdate", () => {
+      if (!isNaN(audio.duration)) {
+        const valor = (audio.currentTime / audio.duration) * 100;
+        barraProgresso.value = valor;
+      }
+    });
+
+    barraProgresso.addEventListener("input", () => {
+      if (!isNaN(audio.duration)) {
+        const novoTempo = (barraProgresso.value / 100) * audio.duration;
+        audio.currentTime = novoTempo;
+      }
+    });
+
+    controleVolume.addEventListener("input", () => {
+      audio.volume = controleVolume.value / 100;
+    });
+
+    const dataAlvo = new Date("2025-08-31T00:00:01");
+    const senhaCorreta = "Cinnamon girl";
+
+    function atualizarContador() {
+      const agora = new Date();
+      const restante = dataAlvo - agora;
+      const divContador = document.getElementById("contador");
+      const divSenha = document.getElementById("senha-container");
+
+      if (restante <= 0) {
+        divContador.style.display = "none";
+        divSenha.style.display = "block";
+      } else {
+        const dias = Math.floor(restante / (1000 * 60 * 60 * 24));
+        const horas = Math.floor((restante / (1000 * 60 * 60)) % 24);
+        const minutos = Math.floor((restante / (1000 * 60)) % 60);
+        const segundos = Math.floor((restante / 1000) % 60);
+        divContador.textContent = `⏳ Faltam ${dias} dias, ${horas}h ${minutos}min ${segundos}s para liberar!`;
+      }
+    }
+
+    function verificarSenha() {
+      const senha = document.getElementById("senha").value.trim();
+      const erro = document.getElementById("mensagem-erro");
+      const presente = document.getElementById("presente");
+
+      if (senha.toLowerCase() === senhaCorreta.toLowerCase()) {
+        document.getElementById("senha-container").style.display = "none";
+        presente.style.display = "block";
+        erro.textContent = "";
+      } else {
+        erro.textContent = "Senha incorreta. Tente novamente.";
+      }
+    }
+
+    setInterval(atualizarContador, 1000);
+    atualizarContador();
+    atualizarFonteMusica();
+  </script>
+</body>
+</html>
